@@ -47,8 +47,8 @@ private:
   std::ifstream stream;
   std::string currentToken;
   std::string nextToken;
-  std::stringstream currentInstruction;
+  std::stringstream cleanStream;
 
-  void getNextInstruction();
+  void cleanCode();
   void getNextToken();
 };
