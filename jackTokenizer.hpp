@@ -1,6 +1,6 @@
 #pragma once
 #include <fstream>
-#include <iterator>
+#include <sstream>
 #include <string>
 
 class jackTokenizer {
@@ -47,7 +47,7 @@ private:
   std::ifstream stream;
   std::string currentToken;
   std::string nextToken;
-  std::string currentInstruction;
+  std::stringstream currentInstruction;
 
   void getNextInstruction();
   void getNextToken();
