@@ -6,19 +6,13 @@ bool hasNonSpace(const std::string &str) {
 }
 } // namespace
 
-void jackTokenizer::getNextInstruction() {
+void jackTokenizer::cleanCode() {
   std::string line;
-  currentInstruction.str("");
-  currentInstruction.clear();
-
   bool openComment = false;
   bool openString = false;
-  std::string instruction;
 
-  while ((instruction.empty() || openComment) && std::getline(stream, line)) {
-
-    if (!instruction.empty())
-      instruction += ' ';
+  while (std::getline(stream, line)) {
+    std::string instruction;
 
     for (size_t i = 0; i < line.size(); ++i) {
       const auto &currentLetter = line[i];
@@ -47,10 +41,13 @@ void jackTokenizer::getNextInstruction() {
 
       instruction += currentLetter;
     }
+
+    instruction += " ";
     if (!hasNonSpace(instruction))
       instruction.clear();
+
+    cleanStream << instruction;
   }
-  currentInstruction << instruction;
 }
 
 void jackTokenizer::getNextToken() {}
