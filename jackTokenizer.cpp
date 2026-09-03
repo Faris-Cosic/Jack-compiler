@@ -1,15 +1,21 @@
 #include "jackTokenizer.hpp"
 
+namespace {
+bool hasNonSpace(const std::string &str) {
+  return str.find_first_not_of("\t\n\r ") != std::string::npos;
+}
+} // namespace
+
 void jackTokenizer::getNextInstruction() {
   std::string line;
+  currentInstruction.str("");
   currentInstruction.clear();
 
   bool openComment = false;
   bool openString = false;
   std::string instruction;
 
-  while (std::getline(stream, line) &&
-         (currentInstruction.empty() || openComment)) {
+  while ((instruction.empty() || openComment) && std::getline(stream, line)) {
 
     if (!instruction.empty())
       instruction += ' ';
@@ -41,8 +47,10 @@ void jackTokenizer::getNextInstruction() {
 
       instruction += currentLetter;
     }
-
-    if (!instruction.empty())
-      currentInstruction = instruction;
+    if (!hasNonSpace(instruction))
+      instruction.clear();
   }
+  currentInstruction << instruction;
 }
+
+void jackTokenizer::getNextToken() {}
