@@ -13,6 +13,17 @@ bool isSymbol(const char c) {
 }
 } // namespace
 
+jackTokenizer::jackTokenizer(std::ifstream &&ifstream)
+    : stream{std::move(ifstream)} {
+  cleanCode();
+  getNextToken();
+}
+
+void jackTokenizer::advance() {
+  getNextToken();
+  currentToken = nextToken;
+}
+
 void jackTokenizer::cleanCode() {
   std::string line;
   bool openComment = false;
