@@ -80,6 +80,8 @@ char jackTokenizer::symbol() const { return currentToken[0]; }
 
 std::string jackTokenizer::identifier() const { return currentToken; }
 
+int jackTokenizer::intVal() const { return std::stoi(currentToken); }
+
 void jackTokenizer::cleanCode() {
   std::string line;
   bool openComment = false;
