@@ -39,7 +39,7 @@ public:
   Keyword keyword() const;
 
   char symbol() const;
-  std::string Identifier() const;
+  std::string identifier() const;
   int intVal() const;
   std::string stringVal() const;
 
