@@ -38,10 +38,12 @@ public:
   Token tokenType() const;
   Keyword keyword() const;
 
-  char symbol() const;
-  std::string identifier() const;
-  int intVal() const;
-  std::string stringVal() const;
+  char symbol() const { return currentToken[0]; };
+  std::string identifier() const { return currentToken; };
+  int intVal() const { return std::stoi(currentToken); };
+  std::string stringVal() const {
+    return currentToken.substr(1, currentToken.size() - 2);
+  };
 
 private:
   std::ifstream stream;

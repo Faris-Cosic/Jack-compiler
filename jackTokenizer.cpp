@@ -76,16 +76,6 @@ jackTokenizer::Keyword jackTokenizer::keyword() const {
   return keywordMap.at(currentToken);
 }
 
-char jackTokenizer::symbol() const { return currentToken[0]; }
-
-std::string jackTokenizer::identifier() const { return currentToken; }
-
-int jackTokenizer::intVal() const { return std::stoi(currentToken); }
-
-std::string jackTokenizer::stringVal() const {
-  return currentToken.substr(1, currentToken.size() - 2);
-}
-
 void jackTokenizer::cleanCode() {
   std::string line;
   bool openComment = false;
