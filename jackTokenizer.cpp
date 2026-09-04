@@ -76,6 +76,8 @@ jackTokenizer::Keyword jackTokenizer::keyword() const {
   return keywordMap.at(currentToken);
 }
 
+char jackTokenizer::symbol() const { return currentToken[0]; }
+
 void jackTokenizer::cleanCode() {
   std::string line;
   bool openComment = false;
