@@ -4,6 +4,13 @@ namespace {
 bool hasNonSpace(const std::string &str) {
   return str.find_first_not_of("\t\n\r ") != std::string::npos;
 }
+
+bool isSymbol(const char c) {
+  return c == '{' || c == '}' || c == '(' || c == ')' || c == '[' || c == ']' ||
+         c == ';' || c == '.' || c == ',' || c == '+' || c == '-' || c == '*' ||
+         c == '/' || c == '&' || c == '|' || c == '<' || c == '>' || c == '=' ||
+         c == '~';
+}
 } // namespace
 
 void jackTokenizer::cleanCode() {
@@ -50,4 +57,33 @@ void jackTokenizer::cleanCode() {
   }
 }
 
-void jackTokenizer::getNextToken() {}
+void jackTokenizer::getNextToken() {
+  nextToken.clear();
+
+  cleanStream >> std::ws;
+
+  if (cleanStream.eof())
+    return;
+
+  char nextChar = cleanStream.peek();
+
+  if (isSymbol(nextChar)) {
+    nextToken = cleanStream.get();
+  }
+
+  else if (nextChar == '"') {
+    cleanStream.get();
+    for (char c = cleanStream.get(); c != '"' && cleanStream.good();
+         c = cleanStream.get()) {
+      nextToken += c;
+    }
+  }
+
+  else {
+    while (!isSymbol(nextChar) && !std::isspace(nextChar) &&
+           cleanStream.good()) {
+      nextToken += cleanStream.get();
+      nextChar = cleanStream.peek();
+    }
+  }
+}
