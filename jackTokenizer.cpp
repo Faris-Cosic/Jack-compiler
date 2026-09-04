@@ -11,6 +11,15 @@ bool isSymbol(const char c) {
          c == '/' || c == '&' || c == '|' || c == '<' || c == '>' || c == '=' ||
          c == '~';
 }
+bool isKeyword(const std::string &token) {
+  return token == "class" || token == "constructor" || token == "function" ||
+         token == "method" || token == "field" || token == "static" ||
+         token == "var" || token == "int" || token == "char" ||
+         token == "boolean" || token == "void" || token == "true" ||
+         token == "false" || token == "null" || token == "this" ||
+         token == "let" || token == "do" || token == "if" || token == "else" ||
+         token == "while" || token == "return";
+}
 } // namespace
 
 jackTokenizer::jackTokenizer(std::ifstream &&ifstream)
@@ -22,6 +31,20 @@ jackTokenizer::jackTokenizer(std::ifstream &&ifstream)
 void jackTokenizer::advance() {
   getNextToken();
   currentToken = nextToken;
+}
+
+jackTokenizer::Token jackTokenizer::tokenType() const {
+  if (currentToken.size() == 1 && isSymbol(currentToken[0])) {
+    return jackTokenizer::Token::Symbol;
+  }
+  if (std::isdigit(currentToken[0])) {
+    return jackTokenizer::Token::Int_Const;
+  }
+  if (currentToken[0] == '"')
+    return jackTokenizer::Token::String_Const;
+  if (isKeyword(currentToken))
+    return jackTokenizer::Token::Keyword;
+  return jackTokenizer::Token::Identifier;
 }
 
 void jackTokenizer::cleanCode() {
