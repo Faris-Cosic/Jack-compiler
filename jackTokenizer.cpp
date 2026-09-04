@@ -1,4 +1,5 @@
 #include "jackTokenizer.hpp"
+#include <unordered_map>
 
 namespace {
 bool hasNonSpace(const std::string &str) {
@@ -45,6 +46,34 @@ jackTokenizer::Token jackTokenizer::tokenType() const {
   if (isKeyword(currentToken))
     return jackTokenizer::Token::Keyword;
   return jackTokenizer::Token::Identifier;
+}
+
+jackTokenizer::Keyword jackTokenizer::keyword() const {
+  const static std::unordered_map<std::string_view, jackTokenizer::Keyword>
+      keywordMap = {
+          {"class", jackTokenizer::Keyword::Class},
+          {"method", jackTokenizer::Keyword::Method},
+          {"constructor", jackTokenizer::Keyword::Constructor},
+          {"function", jackTokenizer::Keyword::Function},
+          {"boolean", jackTokenizer::Keyword::Boolean},
+          {"int", jackTokenizer::Keyword::Int},
+          {"char", jackTokenizer::Keyword::Char},
+          {"void", jackTokenizer::Keyword::Void},
+          {"var", jackTokenizer::Keyword::Var},
+          {"static", jackTokenizer::Keyword::Static},
+          {"field", jackTokenizer::Keyword::Field},
+          {"let", jackTokenizer::Keyword::Let},
+          {"do", jackTokenizer::Keyword::Do},
+          {"if", jackTokenizer::Keyword::If},
+          {"else", jackTokenizer::Keyword::Else},
+          {"while", jackTokenizer::Keyword::While},
+          {"return", jackTokenizer::Keyword::Return},
+          {"true", jackTokenizer::Keyword::True},
+          {"false", jackTokenizer::Keyword::False},
+          {"null", jackTokenizer::Keyword::Null},
+          {"this", jackTokenizer::Keyword::This},
+      };
+  return keywordMap.at(currentToken);
 }
 
 void jackTokenizer::cleanCode() {
