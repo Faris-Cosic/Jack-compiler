@@ -2,16 +2,13 @@
 #include "jackTokenizer.hpp"
 
 void compilationEngine::compileClass() {
-  tokenizer.advance();
-  output << "<class><keyword>";
-  tokenizer.advance();
-  output << tokenizer.identifier();
-  output << "</keyword>";
-  tokenizer.advance();
-  output << "<symbol>{</symbol>";
-  tokenizer.advance();
-  while (tokenizer.keyword() == jackTokenizer::Keyword::Field ||
-         tokenizer.keyword() == jackTokenizer::Keyword::Static) {
+  output << "<class>";
+  writeTag();
+  writeTag();
+  writeTag();
+  while (tokenizer.tokenType() == jackTokenizer::Token::Keyword &&
+         (tokenizer.keyword() == jackTokenizer::Keyword::Field ||
+          tokenizer.keyword() == jackTokenizer::Keyword::Static)) {
     compileClassVarDec();
   }
 
@@ -31,4 +28,5 @@ void compilationEngine::writeTag() {
     output << "<stringConstant>" << tokenizer.stringVal()
            << "</stringConstant>";
   }
+  tokenizer.advance();
 }
