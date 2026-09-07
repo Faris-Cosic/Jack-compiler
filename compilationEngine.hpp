@@ -40,4 +40,6 @@ public:
 private:
   jackTokenizer tokenizer;
   std::ofstream output;
+
+  void writeTag();
 };
