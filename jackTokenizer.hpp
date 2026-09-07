@@ -38,6 +38,7 @@ public:
   Token tokenType() const;
   Keyword keyword() const;
 
+  std::string keywordString() const { return identifier(); }
   char symbol() const { return currentToken[0]; };
   std::string identifier() const { return currentToken; };
   int intVal() const { return std::stoi(currentToken); };
