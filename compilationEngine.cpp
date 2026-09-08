@@ -36,7 +36,16 @@ void compilationEngine::compileClassVarDec() {
     writeTag();
   }
   writeTag();
-  writeTag();
+}
+
+void compilationEngine::compileSubroutine() {
+  writeTag(); // function type
+  writeTag(); // return type
+  writeTag(); // function name
+  writeTag(); // (
+  compileParameterList();
+  writeTag(); // )
+  compileSubroutineBody();
 }
 
 void compilationEngine::writeTag() {
