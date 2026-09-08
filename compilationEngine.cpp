@@ -11,6 +11,7 @@ void compilationEngine::compileClass() {
   while (tokenizer.tokenType() == jackTokenizer::Token::Keyword &&
          (tokenizer.keyword() == jackTokenizer::Keyword::Field ||
           tokenizer.keyword() == jackTokenizer::Keyword::Static)) {
+    tokenizer.advance();
     compileClassVarDec();
   }
 
@@ -23,6 +24,19 @@ void compilationEngine::compileClass() {
 
   writeTag();
   output << "</class>";
+}
+
+void compilationEngine::compileClassVarDec() {
+  writeTag();
+  writeTag();
+  writeTag();
+  while (tokenizer.tokenType() == jackTokenizer::Token::Symbol &&
+         tokenizer.symbol() == ',') {
+    writeTag();
+    writeTag();
+  }
+  writeTag();
+  writeTag();
 }
 
 void compilationEngine::writeTag() {
