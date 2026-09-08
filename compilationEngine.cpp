@@ -48,6 +48,13 @@ void compilationEngine::compileSubroutine() {
   compileSubroutineBody();
 }
 
+void compilationEngine::compileParameterList() {
+  while (!(tokenizer.tokenType() == jackTokenizer::Token::Symbol &&
+           tokenizer.symbol() == ')')) {
+    writeTag();
+  }
+}
+
 void compilationEngine::writeTag() {
   if (tokenizer.tokenType() == jackTokenizer::Token::Keyword) {
     output << "<keyword>" << tokenizer.keywordString() << "</keyword>";
