@@ -150,6 +150,19 @@ void compilationEngine::compileReturn() {
   writeTag();
 }
 
+void compilationEngine::compileExpression() {
+  compileTerm();
+  while (tokenizer.tokenType() == jackTokenizer::Token::Symbol &&
+         ((tokenizer.symbol() == '+' || tokenizer.symbol() == '-' ||
+           tokenizer.symbol() == '*' || tokenizer.symbol() == '/' ||
+           tokenizer.symbol() == '&' || tokenizer.symbol() == '|' ||
+           tokenizer.symbol() == '<' || tokenizer.symbol() == '>' ||
+           tokenizer.symbol() == '='))) {
+    writeTag();
+    compileTerm();
+  }
+}
+
 void compilationEngine::writeTag() {
   if (tokenizer.tokenType() == jackTokenizer::Token::Keyword) {
     output << "<keyword>" << tokenizer.keywordString() << "</keyword>";
