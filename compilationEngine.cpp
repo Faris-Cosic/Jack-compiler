@@ -124,6 +124,24 @@ void compilationEngine::compileWhile() {
   writeTag();
 }
 
+void compilationEngine::compileDo() {
+  writeTag();
+  writeTag();
+  if (tokenizer.symbol() == '(') {
+    writeTag();
+    compileExpressionList();
+    writeTag();
+  } else {
+    writeTag();
+    writeTag();
+    writeTag();
+    compileExpressionList();
+    writeTag();
+  }
+
+  writeTag();
+}
+
 void compilationEngine::writeTag() {
   if (tokenizer.tokenType() == jackTokenizer::Token::Keyword) {
     output << "<keyword>" << tokenizer.keywordString() << "</keyword>";
