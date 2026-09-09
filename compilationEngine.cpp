@@ -96,6 +96,23 @@ void compilationEngine::compileLet() {
   writeTag();
 }
 
+void compilationEngine::compileIf() {
+  writeTag();
+  writeTag();
+  compileExpression();
+  writeTag();
+  writeTag();
+  compileStatements();
+  writeTag();
+  if (tokenizer.tokenType() == jackTokenizer::Token::Keyword &&
+      tokenizer.keyword() == jackTokenizer::Keyword::Else) {
+    writeTag();
+    writeTag();
+    compileStatements();
+    writeTag();
+  }
+}
+
 void compilationEngine::writeTag() {
   if (tokenizer.tokenType() == jackTokenizer::Token::Keyword) {
     output << "<keyword>" << tokenizer.keywordString() << "</keyword>";
