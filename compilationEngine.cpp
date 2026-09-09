@@ -66,6 +66,22 @@ void compilationEngine::compileVarDec() {
   writeTag();
 }
 
+void compilationEngine::compileStatements() {
+  while (!(tokenizer.tokenType() == jackTokenizer::Token::Symbol &&
+           tokenizer.symbol() == '}')) {
+    if (tokenizer.keyword() == jackTokenizer::Keyword::Let)
+      compileLet();
+    else if (tokenizer.keyword() == jackTokenizer::Keyword::If)
+      compileIf();
+    else if (tokenizer.keyword() == jackTokenizer::Keyword::While)
+      compileWhile();
+    else if (tokenizer.keyword() == jackTokenizer::Keyword::Do)
+      compileDo();
+    else if (tokenizer.keyword() == jackTokenizer::Keyword::Return)
+      compileReturn();
+  }
+}
+
 void compilationEngine::writeTag() {
   if (tokenizer.tokenType() == jackTokenizer::Token::Keyword) {
     output << "<keyword>" << tokenizer.keywordString() << "</keyword>";
