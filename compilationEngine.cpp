@@ -1,5 +1,6 @@
 #include "compilationEngine.hpp"
 #include "jackTokenizer.hpp"
+#include <ctime>
 
 void compilationEngine::compileClass() {
   output << "<class>";
@@ -111,6 +112,16 @@ void compilationEngine::compileIf() {
     compileStatements();
     writeTag();
   }
+}
+
+void compilationEngine::compileWhile() {
+  writeTag();
+  writeTag();
+  compileExpression();
+  writeTag();
+  writeTag();
+  compileStatements();
+  writeTag();
 }
 
 void compilationEngine::writeTag() {
