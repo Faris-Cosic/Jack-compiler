@@ -25,17 +25,7 @@ void compilationEngine::compileClass() {
   output << "</class>";
 }
 
-void compilationEngine::compileClassVarDec() {
-  writeTag();
-  writeTag();
-  writeTag();
-  while (tokenizer.tokenType() == jackTokenizer::Token::Symbol &&
-         tokenizer.symbol() == ',') {
-    writeTag();
-    writeTag();
-  }
-  writeTag();
-}
+void compilationEngine::compileClassVarDec() { compileVarDec(); }
 
 void compilationEngine::compileSubroutine() {
   writeTag(); // function type
