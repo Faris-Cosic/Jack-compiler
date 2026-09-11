@@ -35,7 +35,7 @@ public:
 
   void compileTerm();
 
-  void compileExpressionList();
+  int compileExpressionList();
 
 private:
   jackTokenizer tokenizer;
