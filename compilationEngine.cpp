@@ -2,7 +2,6 @@
 #include "jackTokenizer.hpp"
 
 void compilationEngine::compileClass() {
-  output << "<class>";
   tokenizer.advance();
   writeTag();
   writeTag();
@@ -22,7 +21,6 @@ void compilationEngine::compileClass() {
   }
 
   writeTag();
-  output << "</class>";
 }
 
 void compilationEngine::compileClassVarDec() { compileVarDec(); }
