@@ -124,7 +124,8 @@ void compilationEngine::compileWhile() {
 void compilationEngine::compileDo() {
   writeTag();
   writeTag();
-  if (tokenizer.symbol() == '(') {
+  if (tokenizer.tokenType() == jackTokenizer::Token::Symbol &&
+      tokenizer.symbol() == '(') {
     writeTag();
     compileExpressionList();
     writeTag();
