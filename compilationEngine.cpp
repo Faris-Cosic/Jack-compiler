@@ -216,7 +216,18 @@ void compilationEngine::writeTag() {
   if (tokenizer.tokenType() == jackTokenizer::Token::Keyword) {
     output << "<keyword>" << tokenizer.keywordString() << "</keyword>";
   } else if (tokenizer.tokenType() == jackTokenizer::Token::Symbol) {
-    output << "<symbol>" << tokenizer.symbol() << "</symbol>";
+    output << "<symbol>";
+
+    if (tokenizer.symbol() == '<')
+      output << "&lt";
+    else if (tokenizer.symbol() == '>')
+      output << "&gt";
+    else if (tokenizer.symbol() == '&')
+      output << "&amp";
+    else
+      output << tokenizer.symbol();
+
+    output << "</symbol>";
   } else if (tokenizer.tokenType() == jackTokenizer::Token::Identifier) {
     output << "<identifier>" << tokenizer.identifier() << "</identifier>";
   } else if (tokenizer.tokenType() == jackTokenizer::Token::Int_Const) {
