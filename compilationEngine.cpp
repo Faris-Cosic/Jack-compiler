@@ -196,6 +196,22 @@ void compilationEngine::compileTerm() {
     writeTag();
 }
 
+int compilationEngine::compileExpressionList() {
+  if (tokenizer.tokenType() == jackTokenizer::Token::Symbol &&
+      tokenizer.symbol() == ')')
+    return 0;
+
+  compileExpression();
+  size_t counter = 1;
+  while (tokenizer.tokenType() == jackTokenizer::Token::Symbol &&
+         tokenizer.symbol() == ',') {
+    writeTag();
+    compileExpression();
+    counter++;
+  }
+  return counter;
+}
+
 void compilationEngine::writeTag() {
   if (tokenizer.tokenType() == jackTokenizer::Token::Keyword) {
     output << "<keyword>" << tokenizer.keywordString() << "</keyword>";
