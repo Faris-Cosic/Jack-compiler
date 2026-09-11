@@ -1,6 +1,5 @@
 #include "compilationEngine.hpp"
 #include "jackTokenizer.hpp"
-#include <ctime>
 
 void compilationEngine::compileClass() {
   output << "<class>";
@@ -161,6 +160,42 @@ void compilationEngine::compileExpression() {
     writeTag();
     compileTerm();
   }
+}
+
+void compilationEngine::compileTerm() {
+  if (tokenizer.tokenType() == jackTokenizer::Token::Identifier) {
+    writeTag();
+    if (tokenizer.tokenType() == jackTokenizer::Token::Symbol &&
+        tokenizer.symbol() == '.') {
+      writeTag();
+      writeTag();
+      writeTag();
+      compileExpressionList();
+      writeTag();
+    } else if (tokenizer.tokenType() == jackTokenizer::Token::Symbol &&
+               tokenizer.symbol() == '(') {
+      writeTag();
+      compileExpressionList();
+      writeTag();
+    } else if (tokenizer.tokenType() == jackTokenizer::Token::Symbol &&
+               tokenizer.symbol() == '[') {
+      writeTag();
+      compileExpression();
+      writeTag();
+    }
+  } else if (tokenizer.tokenType() == jackTokenizer::Token::Symbol &&
+             tokenizer.symbol() == '(') {
+    writeTag();
+    compileExpression();
+    writeTag();
+  } else if (tokenizer.tokenType() == jackTokenizer::Token::Symbol &&
+             (tokenizer.symbol() == '-' || tokenizer.symbol() == '~')) {
+    writeTag();
+    compileTerm();
+  }
+
+  else
+    writeTag();
 }
 
 void compilationEngine::writeTag() {
