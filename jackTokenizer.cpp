@@ -30,8 +30,8 @@ jackTokenizer::jackTokenizer(std::ifstream &&ifstream)
 }
 
 void jackTokenizer::advance() {
-  getNextToken();
   currentToken = nextToken;
+  getNextToken();
 }
 
 jackTokenizer::Token jackTokenizer::tokenType() const {
@@ -135,6 +135,7 @@ void jackTokenizer::getNextToken() {
   }
 
   else if (nextChar == '"') {
+    cleanStream.get();
     for (char c = cleanStream.get(); c != '"' && cleanStream.good();
          c = cleanStream.get()) {
       nextToken += c;
