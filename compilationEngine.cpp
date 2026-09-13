@@ -14,7 +14,7 @@ void compilationEngine::compileVar() {
 }
 
 void compilationEngine::compileClass() {
-  output << "<class>";
+  output << "<class>\n";
   tokenizer.advance();
   writeTag();
   writeTag();
@@ -35,17 +35,17 @@ void compilationEngine::compileClass() {
 
   writeTag();
 
-  output << "</class>";
+  output << "</class>\n";
 }
 
 void compilationEngine::compileClassVarDec() {
-  output << "<classVarDec>";
+  output << "<classVarDec>\n";
   compileVar();
-  output << "</classVarDec>";
+  output << "</classVarDec>\n";
 }
 
 void compilationEngine::compileSubroutine() {
-  output << "<subroutineDec>";
+  output << "<subroutineDec>\n";
   writeTag(); // function type
   writeTag(); // return type
   writeTag(); // function name
@@ -53,20 +53,20 @@ void compilationEngine::compileSubroutine() {
   compileParameterList();
   writeTag(); // )
   compileSubroutineBody();
-  output << "</subroutineDec>";
+  output << "</subroutineDec>\n";
 }
 
 void compilationEngine::compileParameterList() {
-  output << "<parameterList>";
+  output << "<parameterList>\n";
   while (!(tokenizer.tokenType() == jackTokenizer::Token::Symbol &&
            tokenizer.symbol() == ')')) {
     writeTag();
   }
-  output << "</parameterList>";
+  output << "</parameterList>\n";
 }
 
 void compilationEngine::compileSubroutineBody() {
-  output << "<subroutineBody>";
+  output << "<subroutineBody>\n";
   writeTag(); // {
   while (tokenizer.tokenType() == jackTokenizer::Token::Keyword &&
          tokenizer.keyword() == jackTokenizer::Keyword::Var) {
@@ -74,17 +74,17 @@ void compilationEngine::compileSubroutineBody() {
   }
   compileStatements();
   writeTag(); // }
-  output << "</subroutineBody>";
+  output << "</subroutineBody>\n";
 }
 
 void compilationEngine::compileVarDec() {
-  output << "<varDec>";
+  output << "<varDec>\n";
   compileVar();
-  output << "</varDec>";
+  output << "</varDec>\n";
 }
 
 void compilationEngine::compileStatements() {
-  output << "<statements>";
+  output << "<statements>\n";
   while (!(tokenizer.tokenType() == jackTokenizer::Token::Symbol &&
            tokenizer.symbol() == '}')) {
     if (tokenizer.keyword() == jackTokenizer::Keyword::Let)
@@ -98,11 +98,11 @@ void compilationEngine::compileStatements() {
     else if (tokenizer.keyword() == jackTokenizer::Keyword::Return)
       compileReturn();
   }
-  output << "</statements>";
+  output << "</statements>\n";
 }
 
 void compilationEngine::compileLet() {
-  output << "<letStatement>";
+  output << "<letStatement>\n";
   writeTag();
   writeTag();
   if (tokenizer.tokenType() == jackTokenizer::Token::Symbol &&
@@ -114,11 +114,11 @@ void compilationEngine::compileLet() {
   writeTag();
   compileExpression();
   writeTag();
-  output << "</letStatement>";
+  output << "</letStatement>\n";
 }
 
 void compilationEngine::compileIf() {
-  output << "<ifStatement>";
+  output << "<ifStatement>\n";
   writeTag();
   writeTag();
   compileExpression();
@@ -133,11 +133,11 @@ void compilationEngine::compileIf() {
     compileStatements();
     writeTag();
   }
-  output << "</ifStatement>";
+  output << "</ifStatement>\n";
 }
 
 void compilationEngine::compileWhile() {
-  output << "<whileStatement>";
+  output << "<whileStatement>\n";
   writeTag();
   writeTag();
   compileExpression();
@@ -145,11 +145,11 @@ void compilationEngine::compileWhile() {
   writeTag();
   compileStatements();
   writeTag();
-  output << "</whileStatement>";
+  output << "</whileStatement>\n";
 }
 
 void compilationEngine::compileDo() {
-  output << "<doStatement>";
+  output << "<doStatement>\n";
   writeTag();
   writeTag();
   if (tokenizer.tokenType() == jackTokenizer::Token::Symbol &&
@@ -166,21 +166,21 @@ void compilationEngine::compileDo() {
   }
 
   writeTag();
-  output << "</doStatement>";
+  output << "</doStatement>\n";
 }
 
 void compilationEngine::compileReturn() {
-  output << "<returnStatement>";
+  output << "<returnStatement>\n";
   writeTag();
   if (!(tokenizer.tokenType() == jackTokenizer::Token::Symbol &&
         tokenizer.symbol() == ';'))
     compileExpression();
   writeTag();
-  output << "</returnStatement>";
+  output << "</returnStatement>\n";
 }
 
 void compilationEngine::compileExpression() {
-  output << "<expression>";
+  output << "<expression>\n";
   compileTerm();
   while (tokenizer.tokenType() == jackTokenizer::Token::Symbol &&
          ((tokenizer.symbol() == '+' || tokenizer.symbol() == '-' ||
@@ -191,11 +191,11 @@ void compilationEngine::compileExpression() {
     writeTag();
     compileTerm();
   }
-  output << "</expression>";
+  output << "</expression>\n";
 }
 
 void compilationEngine::compileTerm() {
-  output << "<term>";
+  output << "<term>\n";
   if (tokenizer.tokenType() == jackTokenizer::Token::Identifier) {
     writeTag();
     if (tokenizer.tokenType() == jackTokenizer::Token::Symbol &&
@@ -229,15 +229,15 @@ void compilationEngine::compileTerm() {
 
   else
     writeTag();
-  output << "</term>";
+  output << "</term>\n";
 }
 
 int compilationEngine::compileExpressionList() {
-  output << "<expressionList>";
+  output << "<expressionList>\n";
   if (tokenizer.tokenType() == jackTokenizer::Token::Symbol &&
       tokenizer.symbol() == ')') {
 
-    output << "</expressionList>";
+    output << "</expressionList>\n";
     return 0;
   }
 
@@ -249,7 +249,7 @@ int compilationEngine::compileExpressionList() {
     compileExpression();
     counter++;
   }
-  output << "</expressionList>";
+  output << "</expressionList>\n";
   return counter;
 }
 
@@ -277,6 +277,7 @@ void compilationEngine::writeTag() {
     output << "<stringConstant>" << tokenizer.stringVal()
            << "</stringConstant>";
   }
+  output << std::endl;
   if (tokenizer.hasMoreTokens())
     tokenizer.advance();
 }
