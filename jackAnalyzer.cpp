@@ -4,6 +4,8 @@
 
 std::string getNewFileName(const std::filesystem::path &path);
 
+void compileFile(const std::filesystem::path &);
+
 int main(int argc, char *argv[]) {
   if (argc != 2) {
     std::cout << "\nInvalid argument";
@@ -16,15 +18,19 @@ int main(int argc, char *argv[]) {
   }
 
   if (std::filesystem::is_regular_file(path)) {
-    const std::string filePath = path.string();
-    const std::string newFileName = getNewFileName(path);
-    std::ifstream input{filePath};
-    std::ofstream output{newFileName};
-
-    compilationEngine compilation(std::move(input), std::move(output));
-    compilation.compileClass();
+    compileFile(path);
   }
   return 0;
+}
+
+void compileFile(const std::filesystem::path &filePath) {
+  std::ifstream input{filePath.string()};
+
+  const std::string newFileName = getNewFileName(filePath);
+  std::ofstream output{newFileName};
+
+  compilationEngine compilation{std::move(input), std::move(output)};
+  compilation.compileClass();
 }
 
 std::string getNewFileName(const std::filesystem::path &path) {
