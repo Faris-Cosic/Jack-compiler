@@ -19,6 +19,20 @@ int main(int argc, char *argv[]) {
 
   if (std::filesystem::is_regular_file(path)) {
     compileFile(path);
+  } else if (std::filesystem::is_directory(path)) {
+    bool hasJackFiles = false;
+    for (const auto &entry : std::filesystem::directory_iterator(path)) {
+      if (std::filesystem::is_regular_file(entry.path()) &&
+          entry.path().extension().string() == ".jack") {
+        compileFile(entry.path());
+        hasJackFiles = true;
+      }
+    }
+
+    if (!hasJackFiles) {
+      std::cout << "Error! The directory has no '.jack' files!";
+      return 1;
+    }
   }
   return 0;
 }
