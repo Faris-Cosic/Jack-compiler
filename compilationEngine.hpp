@@ -42,4 +42,6 @@ private:
   std::ofstream output;
 
   void writeTag();
+
+  void compileVar();
 };
