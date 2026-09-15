@@ -26,3 +26,11 @@ symbolTable::Kind symbolTable::kindOf(const std::string &name) const {
     return symbolTable::Kind::None;
   }
 }
+
+std::string symbolTable::typeOf(const std::string &name) const {
+  return table.at(name).type;
+}
+
+int symbolTable::indexOf(const std::string &name) const {
+  return table.at(name).index;
+}
