@@ -1,4 +1,5 @@
 #pragma once
+#include <array>
 #include <string>
 #include <unordered_map>
 
@@ -21,7 +22,7 @@ public:
   int indexOf(const std::string &) const;
 
 private:
-  size_t varCounter = 0, staticCounter = 0, fieldCounter = 0, argCounter = 0;
+  std::array<size_t, 4> counters{};
 
   struct symbol {
     std::string type;
