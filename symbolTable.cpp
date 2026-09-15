@@ -1,4 +1,5 @@
 #include "symbolTable.hpp"
+#include <stdexcept>
 
 void symbolTable::reset() {
   counters = {};
@@ -15,4 +16,13 @@ void symbolTable::define(const std::string &name, const std::string &type,
 
 size_t symbolTable::varCount(const Kind kind) const {
   return counters[static_cast<size_t>(kind)];
+}
+
+symbolTable::Kind symbolTable::kindOf(const std::string &name) const {
+  try {
+    const auto &symbol = table.at(name);
+    return symbol.kind;
+  } catch (std::out_of_range &e) {
+    return symbolTable::Kind::None;
+  }
 }

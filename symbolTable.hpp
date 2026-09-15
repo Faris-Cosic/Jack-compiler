@@ -7,7 +7,7 @@ class symbolTable {
 public:
   symbolTable() {};
 
-  enum class Kind { Static, Field, Arg, Var };
+  enum class Kind { Static, Field, Arg, Var, None };
 
   void reset();
 
