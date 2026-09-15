@@ -13,7 +13,7 @@ public:
 
   void define(const std::string &name, const std::string &type, Kind kind);
 
-  int varCount(const Kind) const;
+  size_t varCount(const Kind) const;
 
   Kind kindOf(const std::string &) const;
 
