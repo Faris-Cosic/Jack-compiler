@@ -78,3 +78,7 @@ void VMWriter::writeFunction(const std::string &name, const size_t nVars) {
 void VMWriter::writeCall(const std::string &name, const size_t nArgs) {
   output << "call " << name << " " << nArgs << '\n';
 }
+
+void VMWriter::writeReturn() { output << "return\n"; }
+
+void VMWriter::close() { output.close(); }
