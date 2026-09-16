@@ -4,7 +4,7 @@
 
 class VMwriter {
 public:
-  vmWriter(std::ofstream &&stream) : output(std::move(stream)) {}
+  VMwriter(std::ofstream &&stream) : output(std::move(stream)) {}
 
   enum class Segment {
     Constant,
