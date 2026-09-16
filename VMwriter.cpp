@@ -70,3 +70,11 @@ void VMWriter::writeGoto(const std::string &label) {
 void VMWriter::writeIf(const std::string &label) {
   output << "if-goto " << label << '\n';
 }
+
+void VMWriter::writeFunction(const std::string &name, const size_t nVars) {
+  output << "function " << name << " " << nVars << '\n';
+}
+
+void VMWriter::writeCall(const std::string &name, const size_t nArgs) {
+  output << "call " << name << " " << nArgs << '\n';
+}
