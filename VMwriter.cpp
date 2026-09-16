@@ -26,3 +26,7 @@ std::string segmentToString(const VMWriter::Segment seg) {
 void VMWriter::writePush(const Segment seg, const size_t index) {
   output << "push " << segmentToString(seg) << " " << index << "\n";
 }
+
+void VMWriter::writePop(const Segment seg, const size_t index) {
+  output << "pop" << segmentToString(seg) << " " << index << "\n";
+}
