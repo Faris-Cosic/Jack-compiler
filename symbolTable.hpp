@@ -19,7 +19,7 @@ public:
 
   std::string typeOf(const std::string &) const;
 
-  int indexOf(const std::string &) const;
+  size_t indexOf(const std::string &) const;
 
 private:
   std::array<size_t, 4> counters{};

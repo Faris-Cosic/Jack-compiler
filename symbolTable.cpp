@@ -31,6 +31,6 @@ std::string symbolTable::typeOf(const std::string &name) const {
   return table.at(name).type;
 }
 
-int symbolTable::indexOf(const std::string &name) const {
+size_t symbolTable::indexOf(const std::string &name) const {
   return table.at(name).index;
 }
