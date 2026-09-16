@@ -58,3 +58,15 @@ void VMWriter::writePop(const Segment seg, const size_t index) {
 void VMWriter::writeArithmetic(const Command command) {
   output << enumToString(command) << "\n";
 }
+
+void VMWriter::writeLabel(const std::string &label) {
+  output << "label " << label << '\n';
+}
+
+void VMWriter::writeGoto(const std::string &label) {
+  output << "goto " << label << '\n';
+}
+
+void VMWriter::writeIf(const std::string &label) {
+  output << "if-goto " << label << '\n';
+}
