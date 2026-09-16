@@ -29,7 +29,7 @@ public:
   void writeIf(const std::string &label);
 
   void writeCall(const std::string &name, const size_t nArgs);
-  void writeFunction(const std::string &name, const size_t nArgs);
+  void writeFunction(const std::string &name, const size_t nVars);
 
   void writeReturn();
   void close();
