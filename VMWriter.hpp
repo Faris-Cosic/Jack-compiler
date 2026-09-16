@@ -2,9 +2,9 @@
 #include <fstream>
 #include <string>
 
-class VMwriter {
+class VMWriter {
 public:
-  VMwriter(std::ofstream &&stream) : output(std::move(stream)) {}
+  VMWriter(std::ofstream &&stream) : output(std::move(stream)) {}
 
   enum class Segment {
     Constant,
