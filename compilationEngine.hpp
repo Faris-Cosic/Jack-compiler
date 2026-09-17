@@ -49,5 +49,5 @@ private:
 
   std::string readToken();
 
-  void compileVar();
+  void compileVar(symbolTable &table, symbolTable::Kind kind);
 };
