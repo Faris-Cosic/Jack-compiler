@@ -1,15 +1,16 @@
 #include "compilationEngine.hpp"
-#include "jackTokenizer.hpp"
 #include <string>
 
-void compilationEngine::compileVar() {
-  readToken();
-  readToken();
-  readToken();
+void compilationEngine::compileVar(symbolTable &table, symbolTable::Kind kind) {
+  const std::string type = readToken();
+  std::string name = readToken();
+
+  table.define(name, type, kind);
   while (tokenizer.tokenType() == jackTokenizer::Token::Symbol &&
          tokenizer.symbol() == ',') {
     readToken();
-    readToken();
+    name = readToken();
+    table.define(name, type, kind);
   }
   readToken();
 }
@@ -35,7 +36,13 @@ void compilationEngine::compileClass() {
   readToken();
 }
 
-void compilationEngine::compileClassVarDec() { compileVar(); }
+void compilationEngine::compileClassVarDec() {
+  const std::string kindString = readToken();
+
+  symbolTable::Kind kind = kindString == "field" ? symbolTable::Kind::Field
+                                                 : symbolTable::Kind::Static;
+  compileVar(classTable, kind);
+}
 
 void compilationEngine::compileSubroutine() {
   readToken(); // function type
@@ -64,7 +71,9 @@ void compilationEngine::compileSubroutineBody() {
   readToken(); // }
 }
 
-void compilationEngine::compileVarDec() { compileVar(); }
+void compilationEngine::compileVarDec() {
+  compileVar(subroutineTable, symbolTable::Kind::Var);
+}
 
 void compilationEngine::compileStatements() {
   while (!(tokenizer.tokenType() == jackTokenizer::Token::Symbol &&
