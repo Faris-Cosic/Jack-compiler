@@ -1,24 +1,24 @@
 #include "compilationEngine.hpp"
 #include "jackTokenizer.hpp"
+#include <string>
 
 void compilationEngine::compileVar() {
-  writeTag();
-  writeTag();
-  writeTag();
+  readToken();
+  readToken();
+  readToken();
   while (tokenizer.tokenType() == jackTokenizer::Token::Symbol &&
          tokenizer.symbol() == ',') {
-    writeTag();
-    writeTag();
+    readToken();
+    readToken();
   }
-  writeTag();
+  readToken();
 }
 
 void compilationEngine::compileClass() {
-  output << "<class>\n";
   tokenizer.advance();
-  writeTag();
-  writeTag();
-  writeTag();
+  readToken();
+  className = readToken();
+  readToken();
 
   while (tokenizer.tokenType() == jackTokenizer::Token::Keyword &&
          (tokenizer.keyword() == jackTokenizer::Keyword::Field ||
@@ -32,59 +32,41 @@ void compilationEngine::compileClass() {
           tokenizer.keyword() == jackTokenizer::Keyword::Method)) {
     compileSubroutine();
   }
-
-  writeTag();
-
-  output << "</class>\n";
+  readToken();
 }
 
-void compilationEngine::compileClassVarDec() {
-  output << "<classVarDec>\n";
-  compileVar();
-  output << "</classVarDec>\n";
-}
+void compilationEngine::compileClassVarDec() { compileVar(); }
 
 void compilationEngine::compileSubroutine() {
-  output << "<subroutineDec>\n";
-  writeTag(); // function type
-  writeTag(); // return type
-  writeTag(); // function name
-  writeTag(); // (
+  readToken(); // function type
+  readToken(); // return type
+  readToken(); // function name
+  readToken(); // (
   compileParameterList();
-  writeTag(); // )
+  readToken(); // )
   compileSubroutineBody();
-  output << "</subroutineDec>\n";
 }
 
 void compilationEngine::compileParameterList() {
-  output << "<parameterList>\n";
   while (!(tokenizer.tokenType() == jackTokenizer::Token::Symbol &&
            tokenizer.symbol() == ')')) {
-    writeTag();
+    readToken();
   }
-  output << "</parameterList>\n";
 }
 
 void compilationEngine::compileSubroutineBody() {
-  output << "<subroutineBody>\n";
-  writeTag(); // {
+  readToken(); // {
   while (tokenizer.tokenType() == jackTokenizer::Token::Keyword &&
          tokenizer.keyword() == jackTokenizer::Keyword::Var) {
     compileVarDec();
   }
   compileStatements();
-  writeTag(); // }
-  output << "</subroutineBody>\n";
+  readToken(); // }
 }
 
-void compilationEngine::compileVarDec() {
-  output << "<varDec>\n";
-  compileVar();
-  output << "</varDec>\n";
-}
+void compilationEngine::compileVarDec() { compileVar(); }
 
 void compilationEngine::compileStatements() {
-  output << "<statements>\n";
   while (!(tokenizer.tokenType() == jackTokenizer::Token::Symbol &&
            tokenizer.symbol() == '}')) {
     if (tokenizer.keyword() == jackTokenizer::Keyword::Let)
@@ -98,89 +80,77 @@ void compilationEngine::compileStatements() {
     else if (tokenizer.keyword() == jackTokenizer::Keyword::Return)
       compileReturn();
   }
-  output << "</statements>\n";
 }
 
 void compilationEngine::compileLet() {
-  output << "<letStatement>\n";
-  writeTag();
-  writeTag();
+  readToken();
+  readToken();
   if (tokenizer.tokenType() == jackTokenizer::Token::Symbol &&
       tokenizer.symbol() == '[') {
-    writeTag();
+    readToken();
     compileExpression();
-    writeTag();
+    readToken();
   }
-  writeTag();
+  readToken();
   compileExpression();
-  writeTag();
-  output << "</letStatement>\n";
+  readToken();
 }
 
 void compilationEngine::compileIf() {
-  output << "<ifStatement>\n";
-  writeTag();
-  writeTag();
+  readToken();
+  readToken();
   compileExpression();
-  writeTag();
-  writeTag();
+  readToken();
+  readToken();
   compileStatements();
-  writeTag();
+  readToken();
   if (tokenizer.tokenType() == jackTokenizer::Token::Keyword &&
       tokenizer.keyword() == jackTokenizer::Keyword::Else) {
-    writeTag();
-    writeTag();
+    readToken();
+    readToken();
     compileStatements();
-    writeTag();
+    readToken();
   }
-  output << "</ifStatement>\n";
 }
 
 void compilationEngine::compileWhile() {
-  output << "<whileStatement>\n";
-  writeTag();
-  writeTag();
+  readToken();
+  readToken();
   compileExpression();
-  writeTag();
-  writeTag();
+  readToken();
+  readToken();
   compileStatements();
-  writeTag();
-  output << "</whileStatement>\n";
+  readToken();
 }
 
 void compilationEngine::compileDo() {
-  output << "<doStatement>\n";
-  writeTag();
-  writeTag();
+  readToken();
+  readToken();
   if (tokenizer.tokenType() == jackTokenizer::Token::Symbol &&
       tokenizer.symbol() == '(') {
-    writeTag();
+    readToken();
     compileExpressionList();
-    writeTag();
+    readToken();
   } else {
-    writeTag();
-    writeTag();
-    writeTag();
+    readToken();
+    readToken();
+    readToken();
     compileExpressionList();
-    writeTag();
+    readToken();
   }
 
-  writeTag();
-  output << "</doStatement>\n";
+  readToken();
 }
 
 void compilationEngine::compileReturn() {
-  output << "<returnStatement>\n";
-  writeTag();
+  readToken();
   if (!(tokenizer.tokenType() == jackTokenizer::Token::Symbol &&
         tokenizer.symbol() == ';'))
     compileExpression();
-  writeTag();
-  output << "</returnStatement>\n";
+  readToken();
 }
 
 void compilationEngine::compileExpression() {
-  output << "<expression>\n";
   compileTerm();
   while (tokenizer.tokenType() == jackTokenizer::Token::Symbol &&
          ((tokenizer.symbol() == '+' || tokenizer.symbol() == '-' ||
@@ -188,56 +158,51 @@ void compilationEngine::compileExpression() {
            tokenizer.symbol() == '&' || tokenizer.symbol() == '|' ||
            tokenizer.symbol() == '<' || tokenizer.symbol() == '>' ||
            tokenizer.symbol() == '='))) {
-    writeTag();
+    readToken();
     compileTerm();
   }
-  output << "</expression>\n";
 }
 
 void compilationEngine::compileTerm() {
-  output << "<term>\n";
   if (tokenizer.tokenType() == jackTokenizer::Token::Identifier) {
-    writeTag();
+    readToken();
     if (tokenizer.tokenType() == jackTokenizer::Token::Symbol &&
         tokenizer.symbol() == '.') {
-      writeTag();
-      writeTag();
-      writeTag();
+      readToken();
+      readToken();
+      readToken();
       compileExpressionList();
-      writeTag();
+      readToken();
     } else if (tokenizer.tokenType() == jackTokenizer::Token::Symbol &&
                tokenizer.symbol() == '(') {
-      writeTag();
+      readToken();
       compileExpressionList();
-      writeTag();
+      readToken();
     } else if (tokenizer.tokenType() == jackTokenizer::Token::Symbol &&
                tokenizer.symbol() == '[') {
-      writeTag();
+      readToken();
       compileExpression();
-      writeTag();
+      readToken();
     }
   } else if (tokenizer.tokenType() == jackTokenizer::Token::Symbol &&
              tokenizer.symbol() == '(') {
-    writeTag();
+    readToken();
     compileExpression();
-    writeTag();
+    readToken();
   } else if (tokenizer.tokenType() == jackTokenizer::Token::Symbol &&
              (tokenizer.symbol() == '-' || tokenizer.symbol() == '~')) {
-    writeTag();
+    readToken();
     compileTerm();
   }
 
   else
-    writeTag();
-  output << "</term>\n";
+    readToken();
 }
 
 int compilationEngine::compileExpressionList() {
-  output << "<expressionList>\n";
   if (tokenizer.tokenType() == jackTokenizer::Token::Symbol &&
       tokenizer.symbol() == ')') {
 
-    output << "</expressionList>\n";
     return 0;
   }
 
@@ -245,39 +210,27 @@ int compilationEngine::compileExpressionList() {
   size_t counter = 1;
   while (tokenizer.tokenType() == jackTokenizer::Token::Symbol &&
          tokenizer.symbol() == ',') {
-    writeTag();
+    readToken();
     compileExpression();
     counter++;
   }
-  output << "</expressionList>\n";
   return counter;
 }
 
-void compilationEngine::writeTag() {
+std::string compilationEngine::readToken() {
+  std::string token;
   if (tokenizer.tokenType() == jackTokenizer::Token::Keyword) {
-    output << "<keyword>" << tokenizer.keywordString() << "</keyword>";
+    token = tokenizer.keywordString();
   } else if (tokenizer.tokenType() == jackTokenizer::Token::Symbol) {
-    output << "<symbol>";
-
-    if (tokenizer.symbol() == '<')
-      output << "&lt;";
-    else if (tokenizer.symbol() == '>')
-      output << "&gt;";
-    else if (tokenizer.symbol() == '&')
-      output << "&amp;";
-    else
-      output << tokenizer.symbol();
-
-    output << "</symbol>";
+    token = tokenizer.symbol();
   } else if (tokenizer.tokenType() == jackTokenizer::Token::Identifier) {
-    output << "<identifier>" << tokenizer.identifier() << "</identifier>";
+    token = tokenizer.identifier();
   } else if (tokenizer.tokenType() == jackTokenizer::Token::Int_Const) {
-    output << "<integerConstant>" << tokenizer.intVal() << "</integerConstant>";
+    token = std::to_string(tokenizer.intVal());
   } else if (tokenizer.tokenType() == jackTokenizer::Token::String_Const) {
-    output << "<stringConstant>" << tokenizer.stringVal()
-           << "</stringConstant>";
+    token = tokenizer.stringVal();
   }
-  output << std::endl;
   if (tokenizer.hasMoreTokens())
     tokenizer.advance();
+  return token;
 }
