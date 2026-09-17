@@ -1,11 +1,13 @@
 #pragma once
+#include "VMWriter.hpp"
 #include "jackTokenizer.hpp"
+#include "symbolTable.hpp"
 #include <fstream>
 
 class compilationEngine {
 public:
   compilationEngine(std::ifstream &&input, std::ofstream &&output)
-      : tokenizer{std::move(input)}, output{std::move(output)} {};
+      : tokenizer{std::move(input)}, vmWriter{std::move(output)} {};
 
   void compileClass();
 
@@ -39,9 +41,13 @@ public:
 
 private:
   jackTokenizer tokenizer;
-  std::ofstream output;
+  VMWriter vmWriter;
+  std::string className;
 
-  void writeTag();
+  symbolTable classTable;
+  symbolTable subroutineTable;
+
+  std::string readToken();
 
   void compileVar();
 };
