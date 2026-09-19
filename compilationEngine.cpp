@@ -1,4 +1,6 @@
 #include "compilationEngine.hpp"
+#include "VMWriter.hpp"
+#include "symbolTable.hpp"
 #include <string>
 
 void compilationEngine::compileVar(symbolTable &table, symbolTable::Kind kind) {
@@ -45,13 +47,18 @@ void compilationEngine::compileClassVarDec() {
 }
 
 void compilationEngine::compileSubroutine() {
-  readToken(); // function type
-  readToken(); // return type
-  readToken(); // function name
-  readToken(); // (
+  subroutineTable.reset();
+
+  const std::string functionType = readToken();
+  readToken();
+  const std::string currentFunction = readToken();
+  readToken();
+  if (functionType == "method") {
+    subroutineTable.define("this", className, symbolTable::Kind::Arg);
+  }
   compileParameterList();
-  readToken(); // )
-  compileSubroutineBody();
+  readToken();
+  compileSubroutineBody(currentFunction, functionType);
 }
 
 void compilationEngine::compileParameterList() {
@@ -61,7 +68,9 @@ void compilationEngine::compileParameterList() {
   }
 }
 
-void compilationEngine::compileSubroutineBody() {
+void compilationEngine::compileSubroutineBody(
+    const std::string &currentFunction,
+    const std::string &currentFunctionType) {
   readToken(); // {
   while (tokenizer.tokenType() == jackTokenizer::Token::Keyword &&
          tokenizer.keyword() == jackTokenizer::Keyword::Var) {
@@ -72,6 +81,7 @@ void compilationEngine::compileSubroutineBody() {
 }
 
 void compilationEngine::compileVarDec() {
+  readToken();
   compileVar(subroutineTable, symbolTable::Kind::Var);
 }
 
