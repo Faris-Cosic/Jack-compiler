@@ -1,5 +1,6 @@
 #include "compilationEngine.hpp"
 #include "VMWriter.hpp"
+#include "jackTokenizer.hpp"
 #include "symbolTable.hpp"
 #include <string>
 
@@ -197,7 +198,20 @@ void compilationEngine::compileExpression() {
 }
 
 void compilationEngine::compileTerm() {
-  if (tokenizer.tokenType() == jackTokenizer::Token::Identifier) {
+  if (tokenizer.tokenType() == jackTokenizer::Token::Keyword) {
+    if (tokenizer.keywordString() == "true")
+      vmWriter.writePush(VMWriter::Segment::Constant, 1);
+    else if (tokenizer.keywordString() == "false") {
+      vmWriter.writePush(VMWriter::Segment::Constant, 0);
+      vmWriter.writeArithmetic(VMWriter::Command::Neg);
+    } else if (tokenizer.keywordString() == "null")
+      vmWriter.writePush(VMWriter::Segment::Constant, 0);
+    else if (tokenizer.keywordString() == "this")
+      vmWriter.writePush(VMWriter::Segment::Pointer, 0);
+    readToken();
+  }
+
+  else if (tokenizer.tokenType() == jackTokenizer::Token::Identifier) {
     readToken();
     if (tokenizer.tokenType() == jackTokenizer::Token::Symbol &&
         tokenizer.symbol() == '.') {
@@ -224,12 +238,17 @@ void compilationEngine::compileTerm() {
     readToken();
   } else if (tokenizer.tokenType() == jackTokenizer::Token::Symbol &&
              (tokenizer.symbol() == '-' || tokenizer.symbol() == '~')) {
-    readToken();
+    if (tokenizer.symbol() == '-')
+      vmWriter.writeArithmetic(VMWriter::Command::Neg);
+    else
+      vmWriter.writeArithmetic(VMWriter::Command::Not);
     compileTerm();
   }
 
-  else
-    readToken();
+  else {
+    vmWriter.writePush(VMWriter::Segment::Constant, tokenizer.intVal());
+    tokenizer.advance();
+  }
 }
 
 int compilationEngine::compileExpressionList() {
@@ -257,7 +276,7 @@ std::string compilationEngine::readToken() {
   } else if (tokenizer.tokenType() == jackTokenizer::Token::Symbol) {
     token = tokenizer.symbol();
   } else if (tokenizer.tokenType() == jackTokenizer::Token::Identifier) {
-    token = tokenizer.identifier();
+    token = tokenizer.keywordString();
   } else if (tokenizer.tokenType() == jackTokenizer::Token::Int_Const) {
     token = std::to_string(tokenizer.intVal());
   } else if (tokenizer.tokenType() == jackTokenizer::Token::String_Const) {
