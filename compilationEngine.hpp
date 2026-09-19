@@ -17,7 +17,8 @@ public:
 
   void compileParameterList();
 
-  void compileSubroutineBody();
+  void compileSubroutineBody(const std::string &currentFunction,
+                             const std::string &currentFunctionType);
 
   void compileVarDec();
 
