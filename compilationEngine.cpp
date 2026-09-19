@@ -71,10 +71,24 @@ void compilationEngine::compileParameterList() {
 void compilationEngine::compileSubroutineBody(
     const std::string &currentFunction,
     const std::string &currentFunctionType) {
+
   readToken(); // {
   while (tokenizer.tokenType() == jackTokenizer::Token::Keyword &&
          tokenizer.keyword() == jackTokenizer::Keyword::Var) {
     compileVarDec();
+  }
+
+  const std::string fullFunctionName = className + '.' + currentFunction;
+  const size_t varCount = subroutineTable.varCount(symbolTable::Kind::Var);
+  vmWriter.writeFunction(fullFunctionName, varCount);
+  if (currentFunctionType == "constructor") {
+    const size_t fieldCount = classTable.varCount(symbolTable::Kind::Field);
+    vmWriter.writePush(VMWriter::Segment::Constant, fieldCount);
+    vmWriter.writeCall("Memory.alloc", 1);
+    vmWriter.writePop(VMWriter::Segment::Pointer, 0);
+  } else if (currentFunctionType == "method") {
+    vmWriter.writePush(VMWriter::Segment::Argument, 0);
+    vmWriter.writePop(VMWriter::Segment::Pointer, 0);
   }
   compileStatements();
   readToken(); // }
