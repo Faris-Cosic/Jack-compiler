@@ -199,11 +199,11 @@ void compilationEngine::compileExpression() {
 
 void compilationEngine::compileTerm() {
   if (tokenizer.tokenType() == jackTokenizer::Token::Keyword) {
-    if (tokenizer.keywordString() == "true")
-      vmWriter.writePush(VMWriter::Segment::Constant, 1);
-    else if (tokenizer.keywordString() == "false") {
+    if (tokenizer.keywordString() == "true") {
       vmWriter.writePush(VMWriter::Segment::Constant, 0);
-      vmWriter.writeArithmetic(VMWriter::Command::Neg);
+      vmWriter.writeArithmetic(VMWriter::Command::Not);
+    } else if (tokenizer.keywordString() == "false") {
+      vmWriter.writePush(VMWriter::Segment::Constant, 0);
     } else if (tokenizer.keywordString() == "null")
       vmWriter.writePush(VMWriter::Segment::Constant, 0);
     else if (tokenizer.keywordString() == "this")
@@ -247,7 +247,7 @@ void compilationEngine::compileTerm() {
 
   else {
     vmWriter.writePush(VMWriter::Segment::Constant, tokenizer.intVal());
-    tokenizer.advance();
+    readToken();
   }
 }
 
