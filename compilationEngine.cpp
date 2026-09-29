@@ -2,7 +2,39 @@
 #include "VMWriter.hpp"
 #include "jackTokenizer.hpp"
 #include "symbolTable.hpp"
+#include <stdexcept>
 #include <string>
+
+namespace {
+VMWriter::Segment kindToSegment(symbolTable::Kind kind) {
+  switch (kind) {
+  case symbolTable::Kind::Static:
+    return VMWriter::Segment::Static;
+  case symbolTable::Kind::Arg:
+    return VMWriter::Segment::Argument;
+  case symbolTable::Kind::Field:
+    return VMWriter::Segment::This;
+  case symbolTable::Kind::Var:
+    return VMWriter::Segment::Local;
+  case symbolTable::Kind::None:
+    throw std::invalid_argument("Error!");
+  }
+}
+} // namespace
+
+void compilationEngine::pushVariable(const std::string &name) {
+  symbolTable::Kind kind = subroutineTable.kindOf(name);
+  size_t index;
+  if (kind == symbolTable::Kind::None) {
+    kind = classTable.kindOf(name);
+    index = classTable.indexOf(name);
+  } else
+    index = subroutineTable.indexOf(name);
+  if (kind == symbolTable::Kind::None)
+    throw std::runtime_error("Error, variable is not initialized!");
+  VMWriter::Segment seg = kindToSegment(kind);
+  vmWriter.writePush(seg, index);
+}
 
 void compilationEngine::compileVar(symbolTable &table, symbolTable::Kind kind) {
   const std::string type = readToken();
@@ -212,7 +244,7 @@ void compilationEngine::compileTerm() {
   }
 
   else if (tokenizer.tokenType() == jackTokenizer::Token::Identifier) {
-    readToken();
+    const std::string name = readToken();
     if (tokenizer.tokenType() == jackTokenizer::Token::Symbol &&
         tokenizer.symbol() == '.') {
       readToken();
@@ -227,10 +259,19 @@ void compilationEngine::compileTerm() {
       readToken();
     } else if (tokenizer.tokenType() == jackTokenizer::Token::Symbol &&
                tokenizer.symbol() == '[') {
+
+      pushVariable(name);
       readToken();
       compileExpression();
       readToken();
+
+      vmWriter.writeArithmetic(VMWriter::Command::Add);
+      vmWriter.writePop(VMWriter::Segment::Pointer, 1);
+      vmWriter.writePush(VMWriter::Segment::That, 0);
+    } else {
+      pushVariable(name);
     }
+
   } else if (tokenizer.tokenType() == jackTokenizer::Token::Symbol &&
              tokenizer.symbol() == '(') {
     readToken();
@@ -238,11 +279,24 @@ void compilationEngine::compileTerm() {
     readToken();
   } else if (tokenizer.tokenType() == jackTokenizer::Token::Symbol &&
              (tokenizer.symbol() == '-' || tokenizer.symbol() == '~')) {
-    if (tokenizer.symbol() == '-')
+    if (tokenizer.symbol() == '-') {
+      readToken();
+      compileTerm();
       vmWriter.writeArithmetic(VMWriter::Command::Neg);
-    else
+    } else {
+      readToken();
+      compileTerm();
       vmWriter.writeArithmetic(VMWriter::Command::Not);
-    compileTerm();
+    }
+  } else if (tokenizer.tokenType() == jackTokenizer::Token::String_Const) {
+    const std::string string = readToken();
+    const size_t length = string.length();
+    vmWriter.writePush(VMWriter::Segment::Constant, length);
+    vmWriter.writeCall("String.new", 1);
+    for (const char s : string) {
+      vmWriter.writePush(VMWriter::Segment::Constant, s);
+      vmWriter.writeCall("String.appendChar", 2);
+    }
   }
 
   else {
