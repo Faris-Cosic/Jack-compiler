@@ -38,17 +38,21 @@ const symbolTable *compilationEngine::findTable(const std::string &name) const {
     return &subroutineTable;
   if (classTable.kindOf(name) != symbolTable::Kind::None)
     return &classTable;
-  throw std::runtime_error("Error, variable is not initialized!");
+  return nullptr;
 }
 
 void compilationEngine::pushVariable(const std::string &name) {
   const auto *table = findTable(name);
+  if (!table)
+    throw std::runtime_error("Error, variable is not initialized!");
   const auto kindSegment = getKindSegment(table, name);
   vmWriter.writePush(kindSegment.seg, kindSegment.index);
 }
 
 void compilationEngine::popVariable(const std::string &name) {
   const auto *table = findTable(name);
+  if (!table)
+    throw std::runtime_error("Error, variable is not initialized!");
   const auto kindSegment = getKindSegment(table, name);
   vmWriter.writePop(kindSegment.seg, kindSegment.index);
 }
@@ -290,7 +294,7 @@ void compilationEngine::compileTerm() {
       const std::string functionName = readToken();
       readToken();
 
-      std::string callee;
+      std::string callee = name;
 
       size_t numArgs = 0;
 
