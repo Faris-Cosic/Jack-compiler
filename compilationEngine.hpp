@@ -51,4 +51,10 @@ private:
   std::string readToken();
 
   void compileVar(symbolTable &table, symbolTable::Kind kind);
+
+  const symbolTable *findTable(const std::string &name) const;
+
+  void pushVariable();
+
+  void pushVariable(const std::string &name);
 };

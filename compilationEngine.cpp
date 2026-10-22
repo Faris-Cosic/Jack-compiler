@@ -22,17 +22,20 @@ VMWriter::Segment kindToSegment(symbolTable::Kind kind) {
 }
 } // namespace
 
+const symbolTable *compilationEngine::findTable(const std::string &name) const {
+  if (subroutineTable.kindOf(name) != symbolTable::Kind::None)
+    return &subroutineTable;
+  if (classTable.kindOf(name) != symbolTable::Kind::None)
+    return &classTable;
+  return nullptr;
+}
+
 void compilationEngine::pushVariable(const std::string &name) {
-  symbolTable::Kind kind = subroutineTable.kindOf(name);
-  size_t index;
-  if (kind == symbolTable::Kind::None) {
-    kind = classTable.kindOf(name);
-    index = classTable.indexOf(name);
-  } else
-    index = subroutineTable.indexOf(name);
-  if (kind == symbolTable::Kind::None)
+  const auto *table = findTable(name);
+  if (!table)
     throw std::runtime_error("Error, variable is not initialized!");
-  VMWriter::Segment seg = kindToSegment(kind);
+  VMWriter::Segment seg = kindToSegment(table->kindOf(name));
+  const auto index = table->indexOf(name);
   vmWriter.writePush(seg, index);
 }
 
@@ -248,15 +251,32 @@ void compilationEngine::compileTerm() {
     if (tokenizer.tokenType() == jackTokenizer::Token::Symbol &&
         tokenizer.symbol() == '.') {
       readToken();
+      const std::string functionName = readToken();
       readToken();
+
+      std::string callee;
+
+      size_t numArgs = 0;
+
+      const auto *table = findTable(name);
+
+      if (table) {
+        pushVariable(name);
+        callee = table->typeOf(name);
+        numArgs++;
+      }
+
+      numArgs += compileExpressionList();
       readToken();
-      compileExpressionList();
-      readToken();
+      vmWriter.writeCall(callee + "." + functionName, numArgs);
     } else if (tokenizer.tokenType() == jackTokenizer::Token::Symbol &&
                tokenizer.symbol() == '(') {
       readToken();
-      compileExpressionList();
+      vmWriter.writePush(VMWriter::Segment::Pointer, 0);
+      const size_t numArgs = compileExpressionList() + 1;
+      const std::string fullName = className + "." + name;
       readToken();
+      vmWriter.writeCall(fullName, numArgs);
     } else if (tokenizer.tokenType() == jackTokenizer::Token::Symbol &&
                tokenizer.symbol() == '[') {
 
