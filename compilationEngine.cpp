@@ -168,15 +168,26 @@ void compilationEngine::compileStatements() {
 void compilationEngine::compileLet() {
   readToken();
   const std::string varName = readToken();
+  bool isArray = false;
   if (tokenizer.tokenType() == jackTokenizer::Token::Symbol &&
       tokenizer.symbol() == '[') {
+    isArray = true;
     readToken();
+    pushVariable(varName);
     compileExpression();
     readToken();
+    vmWriter.writeArithmetic(VMWriter::Command::Add);
   }
   readToken();
   compileExpression();
   readToken();
+  if (isArray) {
+    vmWriter.writePop(VMWriter::Segment::Temp, 0);
+    vmWriter.writePop(VMWriter::Segment::Pointer, 1);
+    vmWriter.writePush(VMWriter::Segment::Temp, 0);
+    vmWriter.writePop(VMWriter::Segment::That, 0);
+  } else
+    popVariable(varName);
 }
 
 void compilationEngine::compileIf() {
