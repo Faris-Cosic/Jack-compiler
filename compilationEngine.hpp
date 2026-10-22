@@ -54,7 +54,6 @@ private:
 
   const symbolTable *findTable(const std::string &name) const;
 
-  void pushVariable();
-
   void pushVariable(const std::string &name);
+  void popVariable(const std::string &name);
 };

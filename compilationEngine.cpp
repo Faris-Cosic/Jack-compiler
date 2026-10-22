@@ -20,6 +20,17 @@ VMWriter::Segment kindToSegment(symbolTable::Kind kind) {
     throw std::invalid_argument("Error!");
   }
 }
+
+struct kindSegment {
+  VMWriter::Segment seg;
+  size_t index;
+};
+
+kindSegment getKindSegment(const symbolTable *table, const std::string &name) {
+  kindSegment ks{kindToSegment(table->kindOf(name)), table->indexOf(name)};
+  return ks;
+}
+
 } // namespace
 
 const symbolTable *compilationEngine::findTable(const std::string &name) const {
@@ -27,16 +38,19 @@ const symbolTable *compilationEngine::findTable(const std::string &name) const {
     return &subroutineTable;
   if (classTable.kindOf(name) != symbolTable::Kind::None)
     return &classTable;
-  return nullptr;
+  throw std::runtime_error("Error, variable is not initialized!");
 }
 
 void compilationEngine::pushVariable(const std::string &name) {
   const auto *table = findTable(name);
-  if (!table)
-    throw std::runtime_error("Error, variable is not initialized!");
-  VMWriter::Segment seg = kindToSegment(table->kindOf(name));
-  const auto index = table->indexOf(name);
-  vmWriter.writePush(seg, index);
+  const auto kindSegment = getKindSegment(table, name);
+  vmWriter.writePush(kindSegment.seg, kindSegment.index);
+}
+
+void compilationEngine::popVariable(const std::string &name) {
+  const auto *table = findTable(name);
+  const auto kindSegment = getKindSegment(table, name);
+  vmWriter.writePop(kindSegment.seg, kindSegment.index);
 }
 
 void compilationEngine::compileVar(symbolTable &table, symbolTable::Kind kind) {
@@ -153,7 +167,7 @@ void compilationEngine::compileStatements() {
 
 void compilationEngine::compileLet() {
   readToken();
-  readToken();
+  const std::string varName = readToken();
   if (tokenizer.tokenType() == jackTokenizer::Token::Symbol &&
       tokenizer.symbol() == '[') {
     readToken();
