@@ -220,13 +220,13 @@ void compilationEngine::compileReturn() {
 }
 
 void compilationEngine::compileExpression() {
-  compileTerm();
   const static std::unordered_map<char, VMWriter::Command> symbolMap = {
       {'+', VMWriter::Command::Add}, {'-', VMWriter::Command::Sub},
       {'=', VMWriter::Command::Eq},  {'>', VMWriter::Command::Gt},
       {'<', VMWriter::Command::Lt},  {'&', VMWriter::Command::And},
       {'|', VMWriter::Command::Or},
   };
+  compileTerm();
   while (tokenizer.tokenType() == jackTokenizer::Token::Symbol &&
          (symbolMap.find(tokenizer.symbol()) != symbolMap.cend() ||
           tokenizer.symbol() == '*' || tokenizer.symbol() == '/')) {
