@@ -221,14 +221,25 @@ void compilationEngine::compileReturn() {
 
 void compilationEngine::compileExpression() {
   compileTerm();
+  const static std::unordered_map<char, VMWriter::Command> symbolMap = {
+      {'+', VMWriter::Command::Add}, {'-', VMWriter::Command::Sub},
+      {'=', VMWriter::Command::Eq},  {'>', VMWriter::Command::Gt},
+      {'<', VMWriter::Command::Lt},  {'&', VMWriter::Command::And},
+      {'|', VMWriter::Command::Or},
+  };
   while (tokenizer.tokenType() == jackTokenizer::Token::Symbol &&
-         ((tokenizer.symbol() == '+' || tokenizer.symbol() == '-' ||
-           tokenizer.symbol() == '*' || tokenizer.symbol() == '/' ||
-           tokenizer.symbol() == '&' || tokenizer.symbol() == '|' ||
-           tokenizer.symbol() == '<' || tokenizer.symbol() == '>' ||
-           tokenizer.symbol() == '='))) {
+         (symbolMap.find(tokenizer.symbol()) != symbolMap.cend() ||
+          tokenizer.symbol() == '*' || tokenizer.symbol() == '/')) {
+
+    const auto symbol = tokenizer.symbol();
     readToken();
     compileTerm();
+    if (symbol == '*')
+      vmWriter.writeCall("Math.multiply", 2);
+    else if (symbol == '/')
+      vmWriter.writeCall("Math.divide", 2);
+    else
+      vmWriter.writeArithmetic(symbolMap.at(symbol));
   }
 }
 
