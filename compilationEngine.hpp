@@ -45,6 +45,8 @@ private:
   VMWriter vmWriter;
   std::string className;
 
+  size_t labelCounter = 0;
+
   symbolTable classTable;
   symbolTable subroutineTable;
 

@@ -195,19 +195,30 @@ void compilationEngine::compileLet() {
 }
 
 void compilationEngine::compileIf() {
+  const size_t currentId = labelCounter++;
+  const std::string falseLabel = "IF_FALSE" + std::to_string(currentId);
+  const std::string endLabel = "IF_END" + std::to_string(currentId);
   readToken();
   readToken();
   compileExpression();
   readToken();
   readToken();
+  vmWriter.writeArithmetic(VMWriter::Command::Not);
+  vmWriter.writeIf(falseLabel);
   compileStatements();
   readToken();
+
   if (tokenizer.tokenType() == jackTokenizer::Token::Keyword &&
       tokenizer.keyword() == jackTokenizer::Keyword::Else) {
+    vmWriter.writeGoto(endLabel);
+    vmWriter.writeLabel(falseLabel);
     readToken();
     readToken();
     compileStatements();
     readToken();
+    vmWriter.writeLabel(endLabel);
+  } else {
+    vmWriter.writeLabel(falseLabel);
   }
 }
 
