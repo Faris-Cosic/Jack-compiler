@@ -223,13 +223,21 @@ void compilationEngine::compileIf() {
 }
 
 void compilationEngine::compileWhile() {
-  readToken();
-  readToken();
+  const size_t currentId = labelCounter++;
+  const std::string whileLabel = "WHILE_EXP" + std::to_string(currentId);
+  const std::string endWhileLabel = "WHILE_END" + std::to_string(currentId);
+  vmWriter.writeLabel(whileLabel);
+  readToken(); // while
+  readToken(); // (
   compileExpression();
-  readToken();
-  readToken();
+  vmWriter.writeArithmetic(VMWriter::Command::Not);
+  readToken(); // )
+  readToken(); // {
+  vmWriter.writeIf(endWhileLabel);
   compileStatements();
-  readToken();
+  vmWriter.writeGoto(whileLabel);
+  vmWriter.writeLabel(endWhileLabel);
+  readToken(); // }
 }
 
 void compilationEngine::compileDo() {
