@@ -270,12 +270,10 @@ void compilationEngine::compileReturn() {
   if (!(tokenizer.tokenType() == jackTokenizer::Token::Symbol &&
         tokenizer.symbol() == ';')) {
     compileExpression();
-    vmWriter.writeReturn();
-    readToken();
-    return;
+  } else {
+    vmWriter.writePush(VMWriter::Segment::Constant, 0);
   }
   readToken();
-  vmWriter.writePush(VMWriter::Segment::Constant, 0);
   vmWriter.writeReturn();
 }
 
