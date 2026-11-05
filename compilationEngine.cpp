@@ -247,22 +247,10 @@ void compilationEngine::compileWhile() {
 }
 
 void compilationEngine::compileDo() {
-  readToken();
-  readToken();
-  if (tokenizer.tokenType() == jackTokenizer::Token::Symbol &&
-      tokenizer.symbol() == '(') {
-    readToken();
-    compileExpressionList();
-    readToken();
-  } else {
-    readToken();
-    readToken();
-    readToken();
-    compileExpressionList();
-    readToken();
-  }
-
-  readToken();
+  readToken(); // do
+  compileExpression();
+  vmWriter.writePop(VMWriter::Segment::Temp, 0);
+  readToken(); // ;
 }
 
 void compilationEngine::compileReturn() {
