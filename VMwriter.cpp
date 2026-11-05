@@ -1,4 +1,5 @@
 #include "VMWriter.hpp"
+#include <stdexcept>
 
 namespace {
 std::string enumToString(const VMWriter::Segment seg) {
@@ -20,6 +21,7 @@ std::string enumToString(const VMWriter::Segment seg) {
   case VMWriter::Segment::This:
     return "this";
   }
+  throw std::invalid_argument("Unknown segment");
 }
 
 std::string enumToString(const VMWriter::Command command) {
@@ -43,6 +45,7 @@ std::string enumToString(const VMWriter::Command command) {
   case VMWriter::Command::Sub:
     return "sub";
   }
+  throw std::invalid_argument("Unknown segment");
 }
 
 } // namespace

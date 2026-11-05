@@ -19,6 +19,7 @@ VMWriter::Segment kindToSegment(symbolTable::Kind kind) {
   case symbolTable::Kind::None:
     throw std::invalid_argument("Error!");
   }
+  throw std::invalid_argument("Unknown kind");
 }
 
 struct kindSegment {
