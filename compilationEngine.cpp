@@ -118,7 +118,13 @@ void compilationEngine::compileSubroutine() {
 void compilationEngine::compileParameterList() {
   while (!(tokenizer.tokenType() == jackTokenizer::Token::Symbol &&
            tokenizer.symbol() == ')')) {
-    readToken();
+    const std::string type = readToken();
+    const std::string name = readToken();
+    subroutineTable.define(name, type, symbolTable::Kind::Arg);
+    if (tokenizer.tokenType() == jackTokenizer::Token::Symbol &&
+        tokenizer.symbol() == ',') {
+      readToken();
+    }
   }
 }
 
