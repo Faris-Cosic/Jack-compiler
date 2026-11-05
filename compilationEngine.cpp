@@ -268,9 +268,15 @@ void compilationEngine::compileDo() {
 void compilationEngine::compileReturn() {
   readToken();
   if (!(tokenizer.tokenType() == jackTokenizer::Token::Symbol &&
-        tokenizer.symbol() == ';'))
+        tokenizer.symbol() == ';')) {
     compileExpression();
+    vmWriter.writeReturn();
+    readToken();
+    return;
+  }
   readToken();
+  vmWriter.writePush(VMWriter::Segment::Constant, 0);
+  vmWriter.writeReturn();
 }
 
 void compilationEngine::compileExpression() {
