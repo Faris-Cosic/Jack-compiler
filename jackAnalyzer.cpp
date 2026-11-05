@@ -56,9 +56,9 @@ std::string getNewFileName(const std::filesystem::path &path) {
     if (path.extension().string() != ".jack")
       throw std::invalid_argument("Error, file has to end wit '.jack'");
 
-    newFileName = fileName.stem().string() + ".xml";
+    newFileName = fileName.stem().string() + ".vm";
   } else if (std::filesystem::is_directory(path)) {
-    newFileName = fileName.string() + ".xml";
+    newFileName = fileName.string() + ".vm";
   } else {
     throw std::invalid_argument(
         "Error in provided file, please provide a single .jack file or "
